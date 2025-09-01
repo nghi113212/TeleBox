@@ -1,14 +1,24 @@
 import express from 'express';
+import "dotenv/config";
+import http from 'http';
+import connectDB from './lib/db.js';
+import cors from 'cors';
+import authRoutes from './routes/auth.route.js';
 
 const app = express();
-const PORT = 3000;
+const server = http.createServer(app);
+
+app.use(cors()); 
+app.use(express.json()); 
+
+//Connect to database
+await connectDB();
 
 // Routes
-app.get('/', (req, res) => {
-  res.json({ message: 'TeleBox API is running!' });
-});
+app.use('/api/auth', authRoutes);
+
 
 // Start server
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+server.listen(process.env.PORT, () => {
+  console.log(`Server running on http://localhost:${process.env.PORT}`);
 });
