@@ -1,6 +1,6 @@
 import { S3Client, PutObjectCommand, DeleteObjectCommand, GetObjectCommand} from "@aws-sdk/client-s3";
 
-export const s3Client = new S3Client({
+const s3Client = new S3Client({
     region: process.env.BUCKET_REGION,
     credentials: {
         accessKeyId: process.env.ACCESS_KEY,

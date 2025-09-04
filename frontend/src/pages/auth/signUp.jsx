@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 
-function SignUp({ onSwitchToLogin }) {
+function SignUp() {
   const [formData, setFormData] = useState({
     givenName: '', // Tên (given name)
     familyName: '', // Họ (family name)
@@ -14,6 +15,7 @@ function SignUp({ onSwitchToLogin }) {
   const [errors, setErrors] = useState({})
   const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
+  const navigate = useNavigate()
   const [openDropdowns, setOpenDropdowns] = useState({
     day: false,
     month: false,
@@ -316,9 +318,8 @@ function SignUp({ onSwitchToLogin }) {
   
       const res = await axios.post("http://localhost:8386/api/auth/signup", payload);
   
-      alert("Đăng ký thành công");
-      console.log("Server response:", res.data);
-  
+      console.log("Registration successful:", res.data);
+
       // Reset form sau khi đăng ký thành công
       setFormData({
         givenName: "",
@@ -332,6 +333,10 @@ function SignUp({ onSwitchToLogin }) {
       setSelectedDay("");
       setSelectedMonth("");
       setSelectedYear("");
+
+      // Show success message and redirect to signin
+      alert("Đăng ký thành công! Chuyển đến trang đăng nhập...");
+      navigate('/signin');
   
     } catch (error) {
       console.error("Register error:", error);
@@ -730,7 +735,7 @@ function SignUp({ onSwitchToLogin }) {
             Đã có tài khoản?{' '}
             <button 
               type="button"
-              onClick={onSwitchToLogin}
+              onClick={() => navigate('/signin')}
               className="font-medium text-green-600 hover:text-green-500 underline bg-transparent border-none cursor-pointer"
             >
               Đăng nhập ngay
