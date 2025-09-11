@@ -8,7 +8,6 @@ function Home() {
   useEffect(() => {
     // Kiểm tra authentication
     const token = localStorage.getItem('authToken')
-    const username = localStorage.getItem('username')
     
     if (!token) {
       // Chưa đăng nhập, chuyển về signin
@@ -18,7 +17,6 @@ function Home() {
 
     // Set user info từ localStorage
     setUser({
-      username: username || 'User',
       token: token
     })
   }, [navigate])
@@ -26,7 +24,7 @@ function Home() {
   const handleLogout = () => {
     // Clear localStorage
     localStorage.removeItem('authToken')
-    localStorage.removeItem('username')
+    // localStorage.removeItem('username')
     localStorage.removeItem('rememberMe')
     
     // Redirect to signin
@@ -56,9 +54,7 @@ function Home() {
 
             {/* User Menu */}
             <div className="flex items-center space-x-4">
-              <span className="text-gray-700">
-                Xin chào, <span className="font-semibold">{user.username}</span>!
-              </span>
+
               <button
                 onClick={handleLogout}
                 className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
@@ -151,7 +147,8 @@ function Home() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <p className="text-sm text-gray-500">Username</p>
-                <p className="font-medium text-gray-900">{user.username}</p>
+                {/* <p className="font-medium text-gray-900">{user.username}</p> */}
+                {/* Mốt sửa lại sau */}
               </div>
               <div>
                 <p className="text-sm text-gray-500">Trạng thái</p>

@@ -312,8 +312,7 @@ function SignUp() {
         familyName: formData.familyName,
         givenName: formData.givenName,
         birthDate: formData.dateOfBirth,
-        gender: formData.gender,
-        imageUrl: "" // nếu có upload avatar thì thêm
+        gender: formData.gender
       };
   
       const res = await axios.post("http://localhost:8386/api/auth/signup", payload);
@@ -352,11 +351,11 @@ function SignUp() {
   
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-emerald-100 px-4 py-8">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 px-4 py-8">
       <div className="max-w-md w-full space-y-6">
         {/* Brand Name */}
         <div className="text-center">
-          <h1 className="text-4xl font-bold text-green-600 mb-2">
+          <h1 className="text-4xl font-bold text-blue-600 mb-2">
             TeleBox
           </h1>
         </div>
@@ -386,7 +385,7 @@ function SignUp() {
                   type="text"
                   value={formData.givenName}
                   onChange={handleChange}
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all ${
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all ${
                     errors.givenName ? 'border-red-500 bg-red-50' : 'border-gray-300'
                   }`}
                   placeholder="Tên của bạn"
@@ -402,7 +401,7 @@ function SignUp() {
                   type="text"
                   value={formData.familyName}
                   onChange={handleChange}
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all ${
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all ${
                     errors.familyName ? 'border-red-500 bg-red-50' : 'border-gray-300'
                   }`}
                   placeholder="Họ của bạn"
@@ -435,9 +434,9 @@ function SignUp() {
                   <button
                     type="button"
                     onClick={() => toggleDropdown('day')}
-                    className={`w-full px-3 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all text-left flex items-center justify-between ${
+                    className={`w-full px-3 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all text-left flex items-center justify-between ${
                       errors.dateOfBirth ? 'border-red-500 bg-red-50' : 'border-gray-300'
-                    } ${openDropdowns.day ? 'ring-2 ring-green-500 border-transparent' : ''}`}
+                    } ${openDropdowns.day ? 'ring-2 ring-blue-500 border-transparent' : ''}`}
                   >
                     <span className={selectedDay ? 'text-gray-900' : 'text-gray-500'}>
                       {selectedDay || 'Ngày'}
@@ -461,7 +460,7 @@ function SignUp() {
                           key={day}
                           type="button"
                           onClick={() => handleDaySelect(day)}
-                          className="w-full px-3 py-2 text-left hover:bg-green-50 focus:bg-green-50 focus:outline-none transition-colors duration-150 first:rounded-t-lg last:rounded-b-lg"
+                          className="w-full px-3 py-2 text-left hover:bg-blue-50 focus:bg-blue-50 focus:outline-none transition-colors duration-150 first:rounded-t-lg last:rounded-b-lg"
                         >
                           <span className="text-gray-900">{day}</span>
                         </button>
@@ -475,9 +474,9 @@ function SignUp() {
                   <button
                     type="button"
                     onClick={() => toggleDropdown('month')}
-                    className={`w-full px-3 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all text-left flex items-center justify-between ${
+                    className={`w-full px-3 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all text-left flex items-center justify-between ${
                       errors.dateOfBirth ? 'border-red-500 bg-red-50' : 'border-gray-300'
-                    } ${openDropdowns.month ? 'ring-2 ring-green-500 border-transparent' : ''}`}
+                    } ${openDropdowns.month ? 'ring-2 ring-blue-500 border-transparent' : ''}`}
                   >
                     <span className={selectedMonth ? 'text-gray-900' : 'text-gray-500'}>
                       {selectedMonth ? `T${selectedMonth}` : 'Tháng'}
@@ -501,7 +500,7 @@ function SignUp() {
                           key={month.value}
                           type="button"
                           onClick={() => handleMonthSelect(month.value)}
-                          className="w-full px-3 py-2 text-left hover:bg-green-50 focus:bg-green-50 focus:outline-none transition-colors duration-150 first:rounded-t-lg last:rounded-b-lg"
+                          className="w-full px-3 py-2 text-left hover:bg-blue-50 focus:bg-blue-50 focus:outline-none transition-colors duration-150 first:rounded-t-lg last:rounded-b-lg"
                         >
                           <span className="text-gray-900">{month.label}</span>
                         </button>
@@ -515,9 +514,9 @@ function SignUp() {
                   <button
                     type="button"
                     onClick={() => toggleDropdown('year')}
-                    className={`w-full px-3 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all text-left flex items-center justify-between ${
+                    className={`w-full px-3 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all text-left flex items-center justify-between ${
                       errors.dateOfBirth ? 'border-red-500 bg-red-50' : 'border-gray-300'
-                    } ${openDropdowns.year ? 'ring-2 ring-green-500 border-transparent' : ''}`}
+                    } ${openDropdowns.year ? 'ring-2 ring-blue-500 border-transparent' : ''}`}
                   >
                     <span className={selectedYear ? 'text-gray-900' : 'text-gray-500'}>
                       {selectedYear || 'Năm'}
@@ -541,7 +540,7 @@ function SignUp() {
                           key={year}
                           type="button"
                           onClick={() => handleYearSelect(year)}
-                          className="w-full px-3 py-2 text-left hover:bg-green-50 focus:bg-green-50 focus:outline-none transition-colors duration-150 first:rounded-t-lg last:rounded-b-lg"
+                          className="w-full px-3 py-2 text-left hover:bg-blue-50 focus:bg-blue-50 focus:outline-none transition-colors duration-150 first:rounded-t-lg last:rounded-b-lg"
                         >
                           <span className="text-gray-900">{year}</span>
                         </button>
@@ -574,9 +573,9 @@ function SignUp() {
                 {genderOptions.map((option) => (
                   <label
                     key={option.value}
-                    className={`flex items-center justify-between cursor-pointer px-3 py-2.5 border rounded-lg focus-within:ring-2 focus-within:ring-green-500 focus-within:border-transparent transition-all ${
+                    className={`flex items-center justify-between cursor-pointer px-3 py-2.5 border rounded-lg focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent transition-all ${
                       errors.gender ? 'border-red-500 bg-red-50' : 'border-gray-300 hover:bg-gray-50'
-                    } ${formData.gender === option.value ? 'ring-2 ring-green-500 border-transparent bg-green-50' : ''}`}
+                    } ${formData.gender === option.value ? 'ring-2 ring-blue-500 border-transparent bg-blue-50' : ''}`}
                   >
                     <span className="text-gray-900 text-sm font-medium">
                       {option.label}
@@ -587,7 +586,7 @@ function SignUp() {
                       value={option.value}
                       checked={formData.gender === option.value}
                       onChange={handleChange}
-                      className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300"
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
                     />
                   </label>
                 ))}
@@ -605,9 +604,9 @@ function SignUp() {
                   {pronounOptions.map((option) => (
                     <label
                       key={option.value}
-                      className={`flex items-center justify-between cursor-pointer px-3 py-2.5 border rounded-lg focus-within:ring-2 focus-within:ring-green-500 focus-within:border-transparent transition-all ${
+                      className={`flex items-center justify-between cursor-pointer px-3 py-2.5 border rounded-lg focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent transition-all ${
                         errors.customPronoun ? 'border-red-500 bg-red-50' : 'border-gray-300 hover:bg-gray-50'
-                      } ${formData.customPronoun === option.value ? 'ring-2 ring-green-500 border-transparent bg-green-50' : ''}`}
+                      } ${formData.customPronoun === option.value ? 'ring-2 ring-blue-500 border-transparent bg-blue-50' : ''}`}
                     >
                       <span className="text-gray-900 text-sm">
                         {option.label}
@@ -618,7 +617,7 @@ function SignUp() {
                         value={option.value}
                         checked={formData.customPronoun === option.value}
                         onChange={handleChange}
-                        className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300"
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
                       />
                     </label>
                   ))}
@@ -637,7 +636,7 @@ function SignUp() {
                 type="text"
                 value={formData.emailOrPhone}
                 onChange={handleChange}
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all ${
+                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all ${
                   errors.emailOrPhone ? 'border-red-500 bg-red-50' : 'border-gray-300'
                 }`}
                 placeholder="Nhập email hoặc số điện thoại"
@@ -656,7 +655,7 @@ function SignUp() {
                   type={showPassword ? 'text' : 'password'}
                   value={formData.password}
                   onChange={handleChange}
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all pr-12 ${
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all pr-12 ${
                     errors.password ? 'border-red-500 bg-red-50' : 'border-gray-300'
                   }`}
                   style={{
@@ -700,7 +699,7 @@ function SignUp() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
                 {isLoading ? (
                   <div className="flex items-center">
@@ -718,11 +717,11 @@ function SignUp() {
               {/* Terms Notice */}
               <p className="mt-2 text-center text-xs text-gray-500">
                 Bằng việc bấm "Đăng ký", bạn đồng ý với{' '}
-                <a href="#" className="text-green-600 hover:text-green-500 underline">
+                <a href="#" className="text-blue-600 hover:text-blue-500 underline">
                   Điều khoản sử dụng
                 </a>
                 {' '}và{' '}
-                <a href="#" className="text-green-600 hover:text-green-500 underline">
+                <a href="#" className="text-blue-600 hover:text-blue-500 underline">
                   Chính sách bảo mật
                 </a>
                 {' '}của chúng tôi.
@@ -736,7 +735,7 @@ function SignUp() {
             <button 
               type="button"
               onClick={() => navigate('/signin')}
-              className="font-medium text-green-600 hover:text-green-500 underline bg-transparent border-none cursor-pointer"
+              className="font-medium text-blue-600 hover:text-blue-500 underline bg-transparent border-none cursor-pointer"
             >
               Đăng nhập ngay
             </button>

@@ -3,7 +3,7 @@ import Profile from "../models/Profile.model.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-export async function signUpService(username, password, familyName, givenName, birthDate, gender, imageUrl) {
+export async function signUpService(username, password, familyName, givenName, birthDate, gender) {
     try{
         //Bước 1: Check if username is already taken    => Password bên frontend nhớ đủ 6 ký tự, hoa thường, đặc biệt,...
         const existingUser = await User.findOne({username});
@@ -16,7 +16,7 @@ export async function signUpService(username, password, familyName, givenName, b
         const user = await User.create({username, password: hashedPassword});
         
         //Bước 3: Tạo profile của user đó   => Notes: BirthDate nhớ xử lý bên frontend
-        const profile = await Profile.create({familyName, givenName, birthDate, gender, imageUrl});
+        const profile = await Profile.create({familyName, givenName, birthDate, gender, imageUrl: "https://cloudanary.s3.ap-southeast-1.amazonaws.com/basic-avatar.jpg"});
         user.profile = profile._id;
         await user.save();
 

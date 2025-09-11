@@ -3,11 +3,14 @@ import { signUpService, signInService } from "../services/auth.service.js";
 export const signUp = async (req, res) => {
     try {
         //Bước 1: Nhận dữ liệu từ frontend
-        const {username, password, familyName, givenName, birthDate, gender, imageUrl} = req.body;
+        const {username, password, familyName, givenName, birthDate, gender} = req.body;
         //Bước 2: Gọi service để tạo user và profile
-        await signUpService(username, password, familyName, givenName, birthDate, gender, imageUrl);
+        await signUpService(username, password, familyName, givenName, birthDate, gender);
         res.status(201).json({message: "Sign up successfully"});
     } catch (error) {
+        if (error.message === "Username already taken") {
+            return res.status(400).json({ message: error.message });
+        }
         res.status(500).json({ message: "Server error", error: error.message });
     }
 }
