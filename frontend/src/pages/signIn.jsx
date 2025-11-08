@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import { useQueryClient } from '@tanstack/react-query'
+import apiClient from '../lib/apiClient.js'
 
 function SignIn() {
   const [formData, setFormData] = useState({
@@ -12,6 +13,7 @@ function SignIn() {
   const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
 
   // Load remembered login data on component mount
   useEffect(() => {
@@ -87,26 +89,17 @@ function SignIn() {
         password: formData.password
       }
 
-      const res = await axios.post("http://localhost:8386/api/auth/signin", payload)
-
-      // Success handling
-      if (res.data.token) {
-        // Save token to localStorage
-        localStorage.setItem('authToken', res.data.token)
-        
-        // Save remember me preference
-        if (formData.rememberMe) {
-          localStorage.setItem('rememberMe', 'true')
-          localStorage.setItem('username', formData.emailOrPhone)
-        } else {
-          localStorage.removeItem('rememberMe')
-          localStorage.removeItem('username')
-        }
+      await apiClient.post('/auth/signin', payload)
+      await queryClient.invalidateQueries({ queryKey: ['me'] })
+      // Save remember me preference (only username hint)
+      if (formData.rememberMe) {
+        localStorage.setItem('rememberMe', 'true')
+        localStorage.setItem('username', formData.emailOrPhone)
+      } else {
+        localStorage.removeItem('rememberMe')
+        localStorage.removeItem('username')
       }
-      
-      // Success! Redirect to home page
-      console.log('Login successful, redirecting to home...')
-      navigate('/home')
+      navigate('/chat')
       
     } catch (error) {
       console.error('Login error:', error)

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import apiClient from '../lib/apiClient.js'
 
 function SignUp() {
   const [formData, setFormData] = useState({
@@ -315,7 +315,7 @@ function SignUp() {
         gender: formData.gender
       };
   
-      const res = await axios.post("http://localhost:8386/api/auth/signup", payload);
+      const res = await apiClient.post('/auth/signup', payload);
   
       console.log("Registration successful:", res.data);
 
@@ -347,6 +347,8 @@ function SignUp() {
     } finally {
       setIsLoading(false);
     }
+
+    console.log("Form submitted:", formData);
   };
   
 

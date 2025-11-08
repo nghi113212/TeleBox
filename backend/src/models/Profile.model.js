@@ -6,7 +6,9 @@ const profileSchema = new Schema({
     givenName: {type: String},
     birthDate: {type: String},
     gender: {type: String},
-    imageUrl: {type: String},
+    about: {type: String, default: ""},
+    imageUrl: {type: String, default: "https://cloudanary.s3.ap-southeast-1.amazonaws.com/basic-avatar.jpg"},
+    imageKey: {type: String, default: ""},
 }, {timestamps: true, versionKey: false});
 
 const Profile = mongoose.model("Profile", profileSchema);

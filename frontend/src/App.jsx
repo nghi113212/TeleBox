@@ -1,18 +1,35 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import SignUp from './pages/auth/signUp.jsx'
-import SignIn from './pages/auth/signIn.jsx'
-import Home from './pages/home/Home.jsx'
+import { useQuery } from '@tanstack/react-query'
+import SignUp from './pages/signUp.jsx'
+import SignIn from './pages/signIn.jsx'
+import ChatPage from './pages/ChatPage.jsx'
+import apiClient from './lib/apiClient.js'
+
+const fetchCurrentUser = async () => {
+  const res = await apiClient.get('/auth/me')
+  return res.data
+}
 
 // Component to check if user is authenticated
 function ProtectedRoute({ children }) {
-  const token = localStorage.getItem('authToken')
-  return token ? children : <Navigate to="/signin" replace />
+  const { data, isLoading } = useQuery({
+    queryKey: ['me'],
+    queryFn: fetchCurrentUser,
+    retry: false,
+  })
+  if (isLoading) return null
+  return data ? children : <Navigate to="/signin" replace />
 }
 
 // Component to redirect authenticated users away from auth pages
 function AuthRoute({ children }) {
-  const token = localStorage.getItem('authToken')
-  return token ? <Navigate to="/home" replace /> : children
+  const { data, isLoading } = useQuery({
+    queryKey: ['me'],
+    queryFn: fetchCurrentUser,
+    retry: false,
+  })
+  if (isLoading) return null
+  return data ? <Navigate to="/chat" replace /> : children
 }
 
 function App() {
@@ -20,14 +37,14 @@ function App() {
       <BrowserRouter>
         <Routes>
             {/* Default route - redirect to home if authenticated, signin if not */}
-            <Route path="/" element={<Navigate to="/home" replace />} />
+            <Route path="/" element={<Navigate to="/chat" replace />} />
             
             {/* Protected routes */}
             <Route 
-              path="/home" 
+              path="/chat" 
               element={
                 <ProtectedRoute>
-                  <Home />
+                  <ChatPage />
                 </ProtectedRoute>
               } 
             />
@@ -51,7 +68,7 @@ function App() {
             />
             
             {/* Catch all route */}
-            <Route path="*" element={<Navigate to="/home" replace />} />
+            <Route path="*" element={<Navigate to="/chat" replace />} />
         </Routes>
       </BrowserRouter>
     );
