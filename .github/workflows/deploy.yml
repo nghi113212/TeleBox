@@ -117,7 +117,7 @@ jobs:
             # Clean up old images
             docker image prune -af
             
-            echo "✅ Deployment completed successfully!"
+            echo "Deployment completed successfully!"
 
       - name: Wait for services to be healthy
         uses: appleboy/ssh-action@v1.0.3
@@ -141,18 +141,18 @@ jobs:
             echo "Testing frontend..."
             curl -f http://localhost/health || echo "Frontend health check failed"
             
-            echo "✅ Health checks completed!"
+            echo "Health checks completed!"
 
       - name: Send notification on success
         if: success()
         run: |
-          echo "🚀 Deployment successful for commit ${{ github.sha }}"
+          echo "Deployment successful for commit ${{ github.sha }}"
           echo "Backend: ${{ secrets.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:backend-${{ github.sha }}"
           echo "Frontend: ${{ secrets.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:frontend-${{ github.sha }}"
 
       - name: Send notification on failure
         if: failure()
         run: |
-          echo "❌ Deployment failed for commit ${{ github.sha }}"
+          echo "Deployment failed for commit ${{ github.sha }}"
           echo "Please check the logs and fix the issues."
 
