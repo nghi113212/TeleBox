@@ -24,7 +24,7 @@ export function initSocket(server, { corsOrigin } = {}) {
 
   ioInstance = new Server(server, {
     cors: {
-      origin: corsOrigin,
+      origin: true,  // Allow all origins (same as HTTP CORS)
       credentials: true,
     },
   });
