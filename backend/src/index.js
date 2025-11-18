@@ -11,10 +11,31 @@ import { initSocket } from './lib/socket.js';
 const app = express();
 const server = http.createServer(app);
 
+// CORS config - cho phép mọi origin vì đã có nginx proxy
+// Trong production, frontend và backend cùng domain qua nginx
 const allowedOrigin = process.env.CLIENT_ORIGIN || 'http://localhost:5173';
 
 // Middleware
-app.use(cors({ origin: allowedOrigin, credentials: true }));
+app.use(cors({ 
+  origin: function(origin, callback) {
+    // Allow requests with no origin (mobile apps, curl, postman)
+    if (!origin) return callback(null, true);
+    
+    // Allow localhost (dev) and production origin
+    const allowedOrigins = [
+      'http://localhost:5173',
+      'http://localhost',
+      allowedOrigin
+    ];
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true 
+}));
 app.use(express.json());
 app.use(cookieParser());
 
