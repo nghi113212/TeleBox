@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  # Backend API
+  backend:
+    image: ${ECR_REGISTRY}/it-project/telebox:backend-${IMAGE_TAG:-latest}
+    container_name: telebox-backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: ${PORT:-8386}
+      DATABASE_URI: ${DATABASE_URI}
+      JWT_SECRET: ${JWT_SECRET}
+      ACCESS_KEY: ${ACCESS_KEY}
+      SECRET_ACCESS_KEY: ${SECRET_ACCESS_KEY}
+      BUCKET_NAME: ${BUCKET_NAME}
+      BUCKET_REGION: ${BUCKET_REGION:-ap-southeast-1}
+    networks:
+      - telebox-network
+    ports:
+      - "8386:8386"
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:8386/api/auth/me', (r) => process.exit(r.statusCode === 401 ? 0 : 1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Frontend (React + Nginx)
+  frontend:
+    image: ${ECR_REGISTRY}/it-project/telebox:frontend-${IMAGE_TAG:-latest}
+    container_name: telebox-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    networks:
+      - telebox-network
+    ports:
+      - "80:80"
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  telebox-network:
+    driver: bridge
+
