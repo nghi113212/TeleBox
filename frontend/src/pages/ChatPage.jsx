@@ -9,7 +9,8 @@ import CreateGroupModal from '../components/chat/CreateGroupModal'
 import GroupInfoModal from '../components/chat/GroupInfoModal'
 import apiClient from '../lib/apiClient.js'
 
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:8386'
+// Dùng same-origin (nginx sẽ proxy /socket.io -> backend:8386)
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || window.location.origin
 
 // API calls
 const fetchChatRooms = async () => {
