@@ -4,8 +4,8 @@ import User from "../models/User.model.js";
 
 const COOKIE_OPTIONS = (isProduction) => ({
   httpOnly: true,
-  secure: isProduction,
-  sameSite: isProduction ? "none" : "lax",
+  secure: false,  // Tắt Secure vì chưa có HTTPS (dùng HTTP)
+  sameSite: "lax",  // lax cho HTTP, none cho HTTPS + cross-site
   path: "/",
 });
 
