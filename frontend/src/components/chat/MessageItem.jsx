@@ -39,11 +39,31 @@ const MessageItem = ({ message, isGroup = false }) => {
           }`}
         >
           <p className="text-sm break-words">{message.text}</p>
-          <p className={`text-xs mt-1 ${
+          <div className={`flex items-center justify-end space-x-1 mt-1 ${
             isMyMessage ? 'text-blue-100' : 'text-gray-500'
           }`}>
-            {message.timestamp}
-          </p>
+            <p className="text-xs">
+              {message.timestamp}
+            </p>
+            {/* Status indicator for my messages */}
+            {isMyMessage && (
+              <div className="flex items-center ml-1">
+                {message.isRead ? (
+                  // Seen - double checkmark in blue/white
+                  <svg className="w-4 h-4 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 13l4 4L23 7" />
+                  </svg>
+                ) : (
+                  // Delivered - double checkmark in white/gray
+                  <svg className="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 13l4 4L23 7" />
+                  </svg>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

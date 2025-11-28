@@ -450,8 +450,38 @@ const ChatPage = () => {
   }, [markReadMutation])
 
   useEffect(() => {
-    const socket = io(SOCKET_URL, { withCredentials: true, transports: ['websocket', 'polling'] })
+    // Only initialize socket when user is authenticated
+    if (!currentUserId) return
+
+    // Create socket but don't auto-connect
+    const socket = io(SOCKET_URL, { 
+      withCredentials: true, 
+      transports: ['polling', 'websocket'], // Try polling first, then upgrade to websocket
+      autoConnect: false, // Don't auto-connect, we'll connect manually
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000,
+      timeout: 20000,
+    })
     socketRef.current = socket
+
+    // Handle connection errors gracefully
+    socket.on('connect_error', (error) => {
+      // Silently handle connection errors
+      console.debug('Socket connection error:', error.message)
+    })
+
+    socket.on('connect', () => {
+      console.log('Socket.IO connected successfully')
+    })
+
+    socket.on('disconnect', (reason) => {
+      console.log('Socket.IO disconnected:', reason)
+    })
+
+    // Manually connect after a small delay to ensure auth cookie is ready
+    setTimeout(() => {
+      socket.connect()
+    }, 100)
 
     const handleNewMessage = ({ roomId, message }) => {
       if (!roomId || !message) return
@@ -532,7 +562,7 @@ const ChatPage = () => {
       socket.off('room:updated', handleRoomUpdated)
       socket.disconnect()
     }
-  }, [queryClient])
+  }, [queryClient, currentUserId])
 
   useEffect(() => {
     if (socketRef.current && selectedRoomId) {
@@ -602,6 +632,11 @@ const ChatPage = () => {
     }
   }
 
+  const handleCloseChat = () => {
+    setSelectedRoomId(null)
+    setDraftMessage('')
+  }
+
   const handleUpdateGroupAvatar = (avatarFile) => {
     if (!selectedRoomId || updateGroupAvatarMutation.isPending) return
     updateGroupAvatarMutation.mutate({
@@ -659,6 +694,7 @@ const ChatPage = () => {
             onDeleteChat={handleDeleteConversation}
             isDeleting={deleteRoomMutation.isPending}
             onShowGroupInfo={handleShowGroupInfo}
+            onCloseChat={handleCloseChat}
           />
         ) : (
           <WelcomeScreen onOpenSidebar={() => setSidebarOpen(true)} />

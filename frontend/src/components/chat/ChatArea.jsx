@@ -16,6 +16,7 @@ const ChatArea = ({
   onDeleteChat,
   isDeleting = false,
   onShowGroupInfo,
+  onCloseChat,
 }) => {
   const isGroup = selectedChat?.raw?.isGroup || false
 
@@ -27,6 +28,7 @@ const ChatArea = ({
         onDeleteChat={onDeleteChat} 
         isDeleting={isDeleting}
         onShowGroupInfo={onShowGroupInfo}
+        onCloseChat={onCloseChat}
       />
       
       <MessageList messages={messages} isLoading={isLoading} listRef={listRef} isGroup={isGroup} />
