@@ -49,16 +49,15 @@ const MessageItem = ({ message, isGroup = false }) => {
             {isMyMessage && (
               <div className="flex items-center ml-1">
                 {message.isRead ? (
-                  // Seen - double checkmark in blue/white
-                  <svg className="w-4 h-4 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
+                  // Seen - double checkmark in bright blue
+                  <svg className="w-4 h-4 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 13l4 4L23 7" />
                   </svg>
                 ) : (
-                  // Delivered - double checkmark in white/gray
-                  <svg className="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
+                  // Delivered - single checkmark in gray/white
+                  <svg className="w-4 h-4 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 13l4 4L23 7" />
                   </svg>
                 )}
               </div>
