@@ -372,11 +372,50 @@ export async function deleteChatRoom(roomId, userId) {
     { $push: { deletedFor: { userId: userObjId, deletedAt: now } } }
   );
 
+  // Check if all members have deleted the room
+  const updatedRoom = await ChatRoom.findById(roomObjId).select("members deletedFor groupAvatar");
+  const allMembersDeleted = updatedRoom.deletedFor.length === updatedRoom.members.length;
+
+  if (allMembersDeleted) {
+    console.log(` All members deleted room ${roomObjId} - performing hard delete`);
+    
+    // 1. Delete group avatar from S3 if exists
+    if (updatedRoom.groupAvatar) {
+      const key = extractS3Key(updatedRoom.groupAvatar);
+      if (key) {
+        try {
+          await deleteFile(key);
+          console.log(` Deleted S3 avatar: ${key}`);
+        } catch (error) {
+          console.error(` Failed to delete S3 avatar: ${error.message}`);
+        }
+      }
+    }
+
+    // 2. Delete all messages in the room
+    const msgResult = await Message.deleteMany({ roomId: roomObjId });
+    console.log(` Deleted ${msgResult.deletedCount} messages`);
+
+    // 3. Delete the room permanently
+    await ChatRoom.deleteOne({ _id: roomObjId });
+    console.log(` Hard deleted room: ${roomObjId}`);
+
+    return {
+      roomId: roomObjId.toString(),
+      deletedFor: userObjId.toString(),
+      deletedAt: now,
+      hardDeleted: true,
+      messagesDeleted: msgResult.deletedCount
+    };
+  }
+
+  // Soft delete only - not all members have deleted yet
   emitToUser(userObjId.toString(), "room:deleted", { roomId: roomObjId.toString() });
 
   return {
     roomId: roomObjId.toString(),
     deletedFor: userObjId.toString(),
     deletedAt: now,
+    hardDeleted: false
   };
 }
