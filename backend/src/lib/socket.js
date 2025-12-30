@@ -48,12 +48,16 @@ export function initSocket(server, { corsOrigin } = {}) {
   ioInstance.on("connection", async (socket) => {
     const userId = socket.data?.userId;
     if (!userId) {
+      console.log("Socket connection rejected - no userId");
       socket.disconnect(true);
       return;
     }
 
+    console.log(`User ${userId} connected, socket: ${socket.id}`);
+
     try {
       const rooms = await ChatRoom.find({ members: userId }).select("_id");
+      console.log(`User ${userId} auto-joining ${rooms.length} rooms`);
       rooms.forEach((room) => {
         socket.join(room._id.toString());
       });
@@ -69,6 +73,9 @@ export function initSocket(server, { corsOrigin } = {}) {
         const roomExists = await ChatRoom.exists({ _id: roomId, members: userId });
         if (roomExists) {
           socket.join(roomId.toString());
+          console.log(`User ${userId} manually joined room ${roomId}`);
+        } else {
+          console.log(`User ${userId} tried to join room ${roomId} but is not a member`);
         }
       } catch (error) {
         console.error("joinRoom error", error);
@@ -78,6 +85,11 @@ export function initSocket(server, { corsOrigin } = {}) {
     socket.on("leaveRoom", (roomId) => {
       if (!roomId) return;
       socket.leave(roomId.toString());
+      console.log(`User ${userId} left room ${roomId}`);
+    });
+
+    socket.on("disconnect", (reason) => {
+      console.log(`User ${userId} disconnected: ${reason}`);
     });
   });
 
@@ -91,11 +103,17 @@ export function getIO() {
   return ioInstance;
 }
 
-export function emitToRoom(roomId, event, payload) {
+export async function emitToRoom(roomId, event, payload) {
   if (!ioInstance || !roomId || !event) {
     return;
   }
-  ioInstance.to(roomId.toString()).emit(event, payload);
+  const roomStr = roomId.toString();
+  
+  // Get sockets in the room for debugging
+  const sockets = await ioInstance.in(roomStr).fetchSockets();
+  console.log(`Emitting '${event}' to room ${roomStr} (${sockets.length} clients connected)`);
+  
+  ioInstance.to(roomStr).emit(event, payload);
 }
 
 export function emitToUser(userId, event, payload) {
