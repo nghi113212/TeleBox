@@ -229,6 +229,12 @@ export async function createMessageInRoom(roomId, senderId, content) {
 
   const populated = await message.populate(POPULATE_SENDER);
 
+  console.log(`Emitting message to room ${roomObjId}:`, {
+    messageId: populated._id,
+    content: populated.content,
+    senderId: populated.senderId?._id,
+  });
+
   emitToRoom(roomObjId.toString(), "message:new", {
     roomId: roomObjId.toString(),
     message: populated,

@@ -12,10 +12,17 @@ const LeftSidebar = ({ activeTab, onTabChange, user }) => {
     name: user?.name || '',
     about: user?.about || DEFAULT_ABOUT,
     avatarUrl: user?.avatar || '',
+    birthDate: user?.birthDate || '',
+    gender: user?.gender || '',
   })
 
   const [baseline, setBaseline] = useState(buildBaseline)
-  const [formData, setFormData] = useState({ name: baseline.name, about: baseline.about })
+  const [formData, setFormData] = useState({ 
+    name: baseline.name, 
+    about: baseline.about,
+    birthDate: baseline.birthDate,
+    gender: baseline.gender,
+  })
   const [avatarPreview, setAvatarPreview] = useState(baseline.avatarUrl)
   const [avatarFile, setAvatarFile] = useState(null)
   const [showProfileMenu, setShowProfileMenu] = useState(false)
@@ -25,14 +32,19 @@ const LeftSidebar = ({ activeTab, onTabChange, user }) => {
   useEffect(() => {
     const next = buildBaseline()
     setBaseline(next)
-    setFormData({ name: next.name, about: next.about })
+    setFormData({ 
+      name: next.name, 
+      about: next.about,
+      birthDate: next.birthDate,
+      gender: next.gender,
+    })
     setAvatarFile(null)
     setAvatarPreview((prev) => {
       if (prev?.startsWith('blob:')) URL.revokeObjectURL(prev)
       return next.avatarUrl
     })
     if (fileInputRef.current) fileInputRef.current.value = ''
-  }, [user?.name, user?.about, user?.avatar])
+  }, [user?.name, user?.about, user?.avatar, user?.birthDate, user?.gender])
 
   // Cleanup blob URLs
   useEffect(() => {
@@ -56,9 +68,16 @@ const LeftSidebar = ({ activeTab, onTabChange, user }) => {
           name: name || '',
           about: profile.about || DEFAULT_ABOUT,
           avatarUrl: profile.imageUrl || '',
+          birthDate: profile.birthDate || '',
+          gender: profile.gender || '',
         }
         setBaseline(updated)
-        setFormData({ name: updated.name, about: updated.about })
+        setFormData({ 
+          name: updated.name, 
+          about: updated.about,
+          birthDate: updated.birthDate,
+          gender: updated.gender,
+        })
         setAvatarPreview((prev) => {
           if (prev?.startsWith('blob:')) URL.revokeObjectURL(prev)
           return updated.avatarUrl
@@ -76,10 +95,15 @@ const LeftSidebar = ({ activeTab, onTabChange, user }) => {
     },
   })
 
-  const hasChanges = formData.name !== baseline.name || formData.about !== baseline.about || avatarFile !== null
+  const hasChanges = formData.name !== baseline.name || formData.about !== baseline.about || formData.birthDate !== baseline.birthDate || formData.gender !== baseline.gender || avatarFile !== null
 
   const resetForm = () => {
-    setFormData({ name: baseline.name, about: baseline.about })
+    setFormData({ 
+      name: baseline.name, 
+      about: baseline.about,
+      birthDate: baseline.birthDate,
+      gender: baseline.gender,
+    })
     setAvatarFile(null)
     setAvatarPreview((prev) => {
       if (prev?.startsWith('blob:')) URL.revokeObjectURL(prev)
@@ -170,6 +194,8 @@ const LeftSidebar = ({ activeTab, onTabChange, user }) => {
     const payload = new FormData()
     payload.append('name', trimmedName)
     payload.append('about', trimmedAbout)
+    payload.append('birthDate', formData.birthDate || '')
+    payload.append('gender', formData.gender || '')
     if (avatarFile) payload.append('avatar', avatarFile)
 
     updateProfileMutation.mutate(payload)
@@ -369,6 +395,37 @@ const LeftSidebar = ({ activeTab, onTabChange, user }) => {
                         placeholder="Share something about yourself"
                       />
                       <p className="text-[11px] text-gray-500 text-right mt-1">{formData.about?.length || 0}/160</p>
+                    </div>
+
+                    <div className="px-4 py-2 flex gap-3">
+                      <div className="flex-1">
+                        <label className="block text-xs text-gray-400 mb-1" htmlFor="profile-birthDate">
+                          Birth Date
+                        </label>
+                        <input
+                          id="profile-birthDate"
+                          type="date"
+                          value={formData.birthDate}
+                          onChange={handleFieldChange('birthDate')}
+                          className="bg-transparent text-white border border-gray-600/70 focus:border-green-500 focus:ring-1 focus:ring-green-500 rounded-lg px-3 py-2 text-sm w-full outline-none transition-colors [color-scheme:dark]"
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <label className="block text-xs text-gray-400 mb-1" htmlFor="profile-gender">
+                          Gender
+                        </label>
+                        <select
+                          id="profile-gender"
+                          value={formData.gender}
+                          onChange={handleFieldChange('gender')}
+                          className="bg-gray-800 text-white border border-gray-600/70 focus:border-green-500 focus:ring-1 focus:ring-green-500 rounded-lg px-3 py-2 text-sm w-full outline-none transition-colors cursor-pointer"
+                        >
+                          <option value="">Select</option>
+                          <option value="male">Male</option>
+                          <option value="female">Female</option>
+                          <option value="other">Other</option>
+                        </select>
+                      </div>
                     </div>
 
                     <div className="px-4 py-3 flex justify-end space-x-2 border-b border-gray-700">

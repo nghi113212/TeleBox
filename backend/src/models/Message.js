@@ -8,7 +8,6 @@ const messageSchema = new Schema({
     createdAt: {type: Date, default: Date.now},
     updatedAt: {type: Date, default: Date.now},
     isRead: {type: Boolean, default: false},
-    isDeleted: {type: Boolean, default: false},
 }, {timestamps: true, versionKey: false});
 
 const Message = mongoose.model("Message", messageSchema);

@@ -42,15 +42,45 @@ const formatTimestamp = (dateString) => {
   const date = new Date(dateString)
   if (Number.isNaN(date.getTime())) return ''
 
+  // Always show time for messages
+  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+}
+
+const formatDateSeparator = (dateString) => {
+  if (!dateString) return ''
+  const date = new Date(dateString)
+  if (Number.isNaN(date.getTime())) return ''
+
   const now = new Date()
   const isToday = 
     date.getFullYear() === now.getFullYear() &&
     date.getMonth() === now.getMonth() &&
     date.getDate() === now.getDate()
 
-  return isToday
-    ? date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    : date.toLocaleDateString()
+  const yesterday = new Date(now)
+  yesterday.setDate(yesterday.getDate() - 1)
+  const isYesterday =
+    date.getFullYear() === yesterday.getFullYear() &&
+    date.getMonth() === yesterday.getMonth() &&
+    date.getDate() === yesterday.getDate()
+
+  if (isToday) return 'Hôm nay'
+  if (isYesterday) return 'Hôm qua'
+  
+  // Show full date for older messages
+  return date.toLocaleDateString('vi-VN', { 
+    weekday: 'long', 
+    day: 'numeric', 
+    month: 'numeric', 
+    year: 'numeric' 
+  })
+}
+
+const getDateKey = (dateString) => {
+  if (!dateString) return ''
+  const date = new Date(dateString)
+  if (Number.isNaN(date.getTime())) return ''
+  return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`
 }
 
 const buildConversation = (room, currentUserId) => {
@@ -94,6 +124,9 @@ const buildMessage = (message, currentUserId) => ({
   senderName: formatName(message.senderId),
   senderAvatar: message.senderId?.profile?.imageUrl || null,
   timestamp: formatTimestamp(message.createdAt),
+  createdAt: message.createdAt, // Raw date for date separators
+  dateKey: getDateKey(message.createdAt), // For grouping messages by date
+  dateSeparator: formatDateSeparator(message.createdAt), // Formatted date label
   isRead: Boolean(message.isRead),
   senderId: message.senderId?._id,
 })
@@ -275,7 +308,10 @@ const ChatPage = () => {
 
       queryClient.setQueryData(['messages', variables.roomId], (prev = []) => {
         if (prev.some((msg) => msg._id === newMessage._id)) return prev
-        return [...prev, newMessage]
+        // Add message and sort by createdAt to ensure proper ordering
+        const updated = [...prev, newMessage]
+        updated.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
+        return updated
       })
 
       queryClient.setQueryData(['chatRooms'], (prev = []) =>
@@ -466,16 +502,33 @@ const ChatPage = () => {
 
     // Handle connection errors gracefully
     socket.on('connect_error', (error) => {
-      // Silently handle connection errors
-      console.debug('Socket connection error:', error.message)
+      console.warn('Socket connection error:', error.message)
     })
 
     socket.on('connect', () => {
-      console.log('Socket.IO connected successfully')
+      console.log('Socket.IO connected successfully, socket id:', socket.id)
+      // Refetch all data to ensure we have latest state
+      queryClient.invalidateQueries({ queryKey: ['chatRooms'] })
+      const currentRoom = selectedRoomRef.current
+      if (currentRoom) {
+        queryClient.invalidateQueries({ queryKey: ['messages', currentRoom] })
+      }
     })
 
     socket.on('disconnect', (reason) => {
       console.log('Socket.IO disconnected:', reason)
+    })
+
+    // Handle reconnection via socket.io manager
+    socket.io.on('reconnect', (attempt) => {
+      console.log('Socket.IO reconnected after', attempt, 'attempts')
+      // Rejoin all rooms and refetch data
+      queryClient.invalidateQueries({ queryKey: ['chatRooms'] })
+      const currentRoom = selectedRoomRef.current
+      if (currentRoom) {
+        socket.emit('joinRoom', currentRoom)
+        queryClient.invalidateQueries({ queryKey: ['messages', currentRoom] })
+      }
     })
 
     // Manually connect after a small delay to ensure auth cookie is ready
@@ -484,28 +537,50 @@ const ChatPage = () => {
     }, 100)
 
     const handleNewMessage = ({ roomId, message }) => {
-      if (!roomId || !message) return
+      console.log('Received new message:', { roomId, messageId: message?._id, content: message?.content })
+      
+      if (!roomId || !message) {
+        console.warn('Invalid message received:', { roomId, message })
+        return
+      }
 
       const currentRoomId = selectedRoomRef.current
       const userId = currentUserRef.current
 
+      // Update messages in the room
       queryClient.setQueryData(['messages', roomId], (prev = []) => {
-        if (prev.some((m) => m._id === message._id)) return prev
-        return [...prev, message]
+        // Check for duplicate
+        if (prev.some((m) => m._id === message._id)) {
+          console.log('Duplicate message, skipping:', message._id)
+          return prev
+        }
+        
+        // Add message and sort by createdAt to ensure proper ordering
+        const updated = [...prev, message]
+        updated.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
+        return updated
       })
 
+      // Update the chat room's last message and unread count
       let roomFound = false
-      queryClient.setQueryData(['chatRooms'], (prev = []) =>
-        prev.map((room) => {
+      queryClient.setQueryData(['chatRooms'], (prev = []) => {
+        const updated = prev.map((room) => {
           if (room._id !== roomId) return room
           roomFound = true
           const isOwn = message.senderId?._id === userId
           const unread = roomId === currentRoomId && !isOwn ? 0 : isOwn ? room.unreadCount || 0 : (room.unreadCount || 0) + 1
+          console.log('Updating room:', { roomId, isOwn, unread, lastMessage: message.content })
           return { ...room, lastMessage: message, unreadCount: unread }
         })
-      )
+        return updated
+      })
 
-      if (!roomFound) queryClient.invalidateQueries({ queryKey: ['chatRooms'] })
+      // If room wasn't found in cache, refetch all rooms
+      if (!roomFound) {
+        console.log('Room not found in cache, refetching rooms...')
+        queryClient.invalidateQueries({ queryKey: ['chatRooms'] })
+      }
+      
       if (roomId === currentRoomId && message.senderId?._id !== userId) markReadRef.current()
     }
 
@@ -560,14 +635,20 @@ const ChatPage = () => {
       socket.off('messages:read', handleMessagesRead)
       socket.off('room:deleted', handleRoomDeleted)
       socket.off('room:updated', handleRoomUpdated)
+      socket.off('connect')
+      socket.off('disconnect')
+      socket.off('connect_error')
+      socket.io.off('reconnect')
       socket.disconnect()
     }
   }, [queryClient, currentUserId])
 
+  // Only emit joinRoom to ensure we're in the room (for read receipts focus)
+  // Do NOT leave rooms - users should stay in all rooms to receive notifications
   useEffect(() => {
     if (socketRef.current && selectedRoomId) {
       socketRef.current.emit('joinRoom', selectedRoomId)
-      return () => socketRef.current?.emit('leaveRoom', selectedRoomId)
+      // No cleanup - stay in room to keep receiving messages
     }
   }, [selectedRoomId])
 
@@ -732,6 +813,8 @@ const ChatPage = () => {
           avatar: authUser?.profile?.imageUrl || null,
           about: authUser?.profile?.about ?? 'Hey there! I am using TeleBox.',
           phone: authUser?.profile?.phone || '',
+          birthDate: authUser?.profile?.birthDate || '',
+          gender: authUser?.profile?.gender || '',
         }}
       />
       {renderMainContent()}
