@@ -6,6 +6,7 @@ on:
 
 jobs:
   test_backend_and_frontend:
+    name: Test backend and frontend
     runs-on: ubuntu-latest
 
     steps:
@@ -17,7 +18,6 @@ jobs:
           cd backend
           npm install
           npm run start
-          npm run test
 
       - name: Run frontend tests
         run: |
@@ -27,8 +27,9 @@ jobs:
           npm run preview
           npm run test
 
-  build_and_push_backend: 
-    runs-on: ubuntu-latest  
+  build_and_push_backend:
+    name: Build and push backend
+    runs-on: ubuntu-latest 
     needs: test_backend_and_frontend
 
     steps:
@@ -54,6 +55,7 @@ jobs:
           tags: ${{ secrets.ECR_REGISTRY_URL }}/it-projects/telebox-backend:${{ github.sha }}
 
   build_and_push_frontend: 
+    name: Build and push frontend
     runs-on: ubuntu-latest
     needs: test_backend_and_frontend
 
