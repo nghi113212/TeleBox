@@ -87,6 +87,7 @@ jobs:
           cat > .env << EOF
           ECR_REGISTRY_URL=${{ secrets.ECR_REGISTRY_URL }}
           IMAGE_TAG=${{ github.sha }}
+          CLIENT_ORIGIN=${{ secrets.CLIENT_ORIGIN }}
           DATABASE_URI=${{ secrets.DATABASE_URI }}
           JWT_SECRET=${{ secrets.JWT_SECRET }}
           BUCKET_NAME=${{ secrets.BUCKET_NAME }}

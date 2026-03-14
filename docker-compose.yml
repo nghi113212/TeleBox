@@ -8,6 +8,7 @@ services:
       - "8386:8386"
     environment:
       - NODE_ENV=production
+      - CLIENT_ORIGIN=${CLIENT_ORIGIN}
       - DATABASE_URI=${DATABASE_URI} 
       - JWT_SECRET=${JWT_SECRET}
       - BUCKET_NAME=${BUCKET_NAME}
