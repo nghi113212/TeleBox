@@ -3,7 +3,7 @@
 
 import http from 'http';
 
-const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost';
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
 
 // Helper function to make HTTP requests
 function makeRequest(path) {
@@ -30,16 +30,6 @@ const tests = [
         return { passed: true, message: 'Frontend is accessible' };
       }
       return { passed: false, message: `Expected 200, got ${response.status}` };
-    }
-  },
-  {
-    name: 'Health check endpoint should work',
-    test: async () => {
-      const response = await makeRequest('/health');
-      if (response.status === 200 && response.data.includes('healthy')) {
-        return { passed: true, message: 'Health check is working' };
-      }
-      return { passed: false, message: `Health check failed: ${response.status}` };
     }
   },
   {

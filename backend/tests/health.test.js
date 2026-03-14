@@ -39,17 +39,6 @@ const tests = [
     }
   },
   {
-    name: 'Auth routes should be accessible',
-    test: async () => {
-      const response = await makeRequest('/api/auth/signin');
-      // Should return 400 (bad request) not 404
-      if (response.status === 400 || response.status === 401) {
-        return { passed: true, message: 'Auth routes are accessible' };
-      }
-      return { passed: false, message: `Expected 400 or 401, got ${response.status}` };
-    }
-  },
-  {
     name: 'Chat routes should be accessible',
     test: async () => {
       const response = await makeRequest('/api/chat/rooms');

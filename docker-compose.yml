@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  backend:
+    image: ${ECR_REGISTRY_URL}/it-projects/telebox-backend:${IMAGE_TAG} 
+    container_name: telebox-backend
+    ports:
+      - "8386:8386"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URI=${DATABASE_URI} 
+      - JWT_SECRET=${JWT_SECRET}
+      - BUCKET_NAME=${BUCKET_NAME}
+      - BUCKET_REGION=${BUCKET_REGION}
+      - ACCESS_KEY=${ACCESS_KEY}
+      - SECRET_ACCESS_KEY=${SECRET_ACCESS_KEY}
+      - PORT=${PORT}
+    networks:
+      - telebox-network
+    restart: unless-stopped
+
+  frontend:
+    image: ${ECR_REGISTRY_URL}/it-projects/telebox-frontend:${IMAGE_TAG} 
+    container_name: telebox-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - telebox-network
+    restart: unless-stopped
+
+networks:
+  telebox-network:
+    driver: bridge
