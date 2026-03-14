@@ -3,7 +3,7 @@
 
 import http from 'http';
 
-const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:4173';
 
 // Helper function to make HTTP requests
 function makeRequest(path) {
