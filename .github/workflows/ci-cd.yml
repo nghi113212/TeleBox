@@ -95,8 +95,8 @@ jobs:
           SECRET_ACCESS_KEY=${{ secrets.SECRET_ACCESS_KEY }}
           PORT=${{ secrets.PORT }}
           EOF
-
-      - name: Pull and deploy docker compose
-        run: |
+          
           docker compose down
+          docker pull ${{ secrets.ECR_REGISTRY_URL }}/it-projects/telebox:backend-${{ github.sha }}
+          docker pull ${{ secrets.ECR_REGISTRY_URL }}/it-projects/telebox:frontend-${{ github.sha }}
           docker compose up -d
