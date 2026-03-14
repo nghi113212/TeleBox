@@ -15,11 +15,14 @@ jobs:
       - name: Run backend tests
         run: |
           cd backend
+          npm install
+          npm run start
           npm run test
 
       - name: Run frontend tests
         run: |
           cd frontend
+          npm install
           npm run build
           npm run preview
           npm run test
