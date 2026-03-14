@@ -80,9 +80,9 @@ jobs:
 
       - name: Prepare app
         run: |
-          mkdir -p /app
-          cp -r $PWD/docker-compose.yml /app/docker-compose.yml
-          cd /app
+          mkdir -p ~/app
+          cp -r $PWD/docker-compose.yml ~/app/docker-compose.yml
+          cd ~/app
 
           cat > .env << EOF
           ECR_REGISTRY_URL=${{ secrets.ECR_REGISTRY_URL }}
@@ -100,4 +100,3 @@ jobs:
         run: |
           docker compose down
           docker compose up -d
-          
