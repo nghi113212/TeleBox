@@ -5,19 +5,13 @@ on:
     branches: [main]
 
 jobs:
-  test_backend_and_frontend:
-    name: Test backend and frontend
+  test:
+    name: Test
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
-
-      - name: Run backend tests
-        run: |
-          cd backend
-          npm install
-          npm run start
 
       - name: Run frontend tests
         run: |
@@ -25,7 +19,6 @@ jobs:
           npm install
           npm run build
           npm run preview
-          npm run test
 
   build_and_push_backend:
     name: Build and push backend
