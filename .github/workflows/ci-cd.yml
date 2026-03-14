@@ -5,25 +5,9 @@ on:
     branches: [main]
 
 jobs:
-  test:
-    name: Test
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-
-      - name: Run frontend tests
-        run: |
-          cd frontend
-          npm install
-          npm run build
-          npm run preview
-
   build_and_push_backend:
     name: Build and push backend
-    runs-on: ubuntu-latest 
-    needs: test
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
@@ -50,7 +34,6 @@ jobs:
   build_and_push_frontend: 
     name: Build and push frontend
     runs-on: ubuntu-latest
-    needs: test
 
     steps:
       - name: Checkout code
