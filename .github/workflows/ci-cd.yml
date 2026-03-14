@@ -78,7 +78,7 @@ jobs:
 
   deploy:
     runs-on: self-hosted
-    needs: build_and_push_backend, build_and_push_frontend
+    needs: [build_and_push_backend, build_and_push_frontend]
 
     steps:
       - name: Checkout code
