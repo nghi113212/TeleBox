@@ -29,7 +29,7 @@ jobs:
           context: ./backend
           file: ./backend/Dockerfile
           push: true
-          tags: ${{ secrets.ECR_REGISTRY_URL }}/it-projects/telebox-backend:${{ github.sha }}
+          tags: ${{ secrets.ECR_REGISTRY_URL }}/it-projects/telebox:backend-${{ github.sha }}
 
   build_and_push_frontend: 
     name: Build and push frontend
@@ -55,7 +55,7 @@ jobs:
           context: ./frontend
           file: ./frontend/Dockerfile
           push: true
-          tags: ${{ secrets.ECR_REGISTRY_URL }}/it-projects/telebox-frontend:${{ github.sha }}
+          tags: ${{ secrets.ECR_REGISTRY_URL }}/it-projects/telebox:frontend-${{ github.sha }}
 
   deploy:
     runs-on: self-hosted

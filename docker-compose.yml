@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   backend:
-    image: ${ECR_REGISTRY_URL}/it-projects/telebox-backend:${IMAGE_TAG} 
+    image: ${ECR_REGISTRY_URL}/it-projects/telebox:backend-${IMAGE_TAG} 
     container_name: telebox-backend
     ports:
       - "8386:8386"
@@ -20,7 +20,7 @@ services:
     restart: unless-stopped
 
   frontend:
-    image: ${ECR_REGISTRY_URL}/it-projects/telebox-frontend:${IMAGE_TAG} 
+    image: ${ECR_REGISTRY_URL}/it-projects/telebox:frontend-${IMAGE_TAG} 
     container_name: telebox-frontend
     ports:
       - "80:80"
